@@ -1,0 +1,614 @@
+
+/* ---------- Variables de color (mantener coherencia visual) ---------- */
+:root{
+    --bg-dark: #071021;
+    --card-bg: rgba(255,255,255,0.03);
+    --teal: #26c6b4;       /* tono principal agua */
+    --teal-2: #2dd4bf;     /* tono secundario */
+    --teal-dark: #06b6a4;
+    --text-light: #ffffff;
+    --accent-dark: #072b2a; /* texto oscuro para botones */
+}
+
+/* Reset ligero y tipografía */
+:root {
+    --white: #ffffff;
+    --muted-white: rgba(255,255,255,0.85);
+    --card-bg: rgba(255,255,255,0.04);
+    --glass: rgba(255,255,255,0.03);
+    --accent: #1fd6a8; /* verde azulado para detalles */
+    --shadow: 0 8px 30px rgba(2,6,23,0.6);
+    --radius: 14px;
+    --glass-border: rgba(255,255,255,0.06);
+    --focus: 0 0 0 4px rgba(31,214,168,0.12);
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+}
+
+html, body, #root {
+    height: 100%
+}
+
+body {
+    min-height: 100vh;
+    color: var(--white);
+    background: linear-gradient(135deg, #000000 0%, #001426 25%, #002b3a 55%, #023b2b 100%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+}
+
+/* ---------- Animaciones generales ---------- */
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes btn-bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(120%); }
+}
+
+/* ---------- Entrada inicial para secciones y tarjetas ---------- */
+.hero-card,
+.projects-grid > *,
+.info-grid > * {
+    opacity: 0;
+    animation: fadeInUp 600ms cubic-bezier(.22,.9,.35,1) forwards;
+}
+
+/* stagger simple para .projects-grid children (hasta 8) */
+.projects-grid > *:nth-child(1){ animation-delay: 80ms; }
+.projects-grid > *:nth-child(2){ animation-delay: 150ms; }
+.projects-grid > *:nth-child(3){ animation-delay: 220ms; }
+.projects-grid > *:nth-child(4){ animation-delay: 290ms; }
+.projects-grid > *:nth-child(5){ animation-delay: 360ms; }
+.projects-grid > *:nth-child(6){ animation-delay: 430ms; }
+.projects-grid > *:nth-child(7){ animation-delay: 500ms; }
+.projects-grid > *:nth-child(8){ animation-delay: 570ms; }
+
+/* info-cards */
+.info-grid > *:nth-child(1){ animation-delay: 100ms; }
+.info-grid > *:nth-child(2){ animation-delay: 180ms; }
+.info-grid > *:nth-child(3){ animation-delay: 260ms; }
+
+/* hero-card slightly earlier */
+.hero-card{ animation-delay: 60ms; }
+
+/* ---------- Tarjetas de código: elevación y brillo animado ---------- */
+.code-details{
+    position: relative;
+    padding: 1rem;
+    border-radius: 12px;
+    background: var(--card-bg);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    transition: transform 260ms cubic-bezier(.22,.9,.35,1), box-shadow 260ms cubic-bezier(.22,.9,.35,1);
+    overflow: hidden;
+}
+
+/* shimmer overlay usando pseudo-elemento */
+.code-details::before{
+    content: "";
+    position: absolute;
+    left: -120%;
+    top: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.06), rgba(255,255,255,0));
+    transform: translateX(0);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 220ms ease;
+}
+
+/* Hover: elevar, sombra más intensa y activar shimmer */
+.code-details:hover{
+    transform: translateY(-10px);
+    box-shadow: 0 18px 40px rgba(3,22,30,0.6);
+}
+.code-details:hover::before{
+    opacity: 1;
+    animation: shimmer 900ms linear infinite;
+}
+
+/* ligero aumento de brillo en el summary/file-name al hover */
+.code-details:hover .file-name{
+    text-shadow: 0 2px 14px rgba(45,212,191,0.12);
+}
+
+/* ---------- Botón principal: .add-code-btn (hover degradado + rebote) ---------- */
+.projects-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.add-code-btn{
+    background: linear-gradient(180deg, var(--teal), var(--teal-2));
+    color: var(--text-light);
+    border: none;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    font-weight: 700;
+    box-shadow: 0 8px 26px rgba(6,86,77,0.14);
+    cursor: pointer;
+    transition: filter 180ms ease, transform 240ms cubic-bezier(.22,.9,.35,1), box-shadow 180ms ease;
+}
+
+/* hover animado: degradado más brillante + rebote leve */
+.add-code-btn:hover,
+.add-code-btn:focus{
+    background: linear-gradient(180deg, var(--teal-2), var(--teal-dark));
+    filter: brightness(1.05);
+    animation: btn-bounce 420ms ease;
+    box-shadow: 0 20px 36px rgba(6,86,77,0.18);
+    outline: none;
+}
+
+/* ---------- Botones Copiar: .copy-btn (esquina superior derecha) ---------- */
+.code-details { padding-top: 1.25rem; /* espacio para el botón */ }
+.copy-btn{
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: linear-gradient(180deg, var(--teal), var(--teal-2));
+    color: var(--accent-dark);
+    border: none;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(3,22,20,0.12);
+    cursor: pointer;
+    transition: transform 200ms cubic-bezier(.22,.9,.35,1), filter 160ms ease, box-shadow 160ms ease;
+}
+
+/* hover: degradado más brillante + pequeño rebote */
+.copy-btn:hover,
+.copy-btn:focus{
+    background: linear-gradient(180deg, var(--teal-2), var(--teal-dark));
+    filter: brightness(1.06);
+    transform: translateY(-6px);
+    box-shadow: 0 18px 34px rgba(3,22,20,0.18);
+    outline: none;
+}
+
+/* Ajustes: asegurar que el summary no se superponga con botones */
+.code-summary{ display: block; padding-right: 130px; }
+
+/* ---------- Accesibilidad y respuesta táctil ---------- */
+.copy-btn:active,
+.add-code-btn:active{
+    transform: translateY(0);
+    transition-duration: 120ms;
+}
+
+/* ---------- Pequeñas mejoras estéticas ---------- */
+.code-frame{
+    width: 100%;
+    height: 360px;
+    border: none;
+    border-radius: 8px;
+    margin-top: 0.75rem;
+    background: #02070a;
+}
+
+/* Contenedor principal */
+.page {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    align-items: stretch;
+}
+
+/* Hero superior: tarjeta con formulario */
+.hero-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+/* Intro textual */
+.logo {
+    font-weight: 700;
+    font-size: 1.65rem;
+    letter-spacing: 0.4px;
+    color: var(--muted-white);
+}
+
+.subtitle {
+    color: rgba(255,255,255,0.75);
+    margin-top: 6px;
+    font-size: 0.98rem;
+}
+
+/* Tarjeta del formulario */
+.name-card {
+    background: linear-gradient(135deg, rgba(31,214,168,0.06), rgba(1,50,32,0.04));
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(31,214,168,0.08);
+    box-shadow: 0 6px 18px rgba(1,19,24,0.5);
+    min-width: 280px;
+    max-width: 480px;
+    width: 42%;
+}
+
+.name-label {
+    display: block;
+    color: var(--muted-white);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.name-card input[type="text"] {
+    flex: 1;
+    padding: 12px 14px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    color: var(--white);
+    outline: none;
+    font-size: 0.95rem;
+    transition: box-shadow 180ms ease, border-color 180ms ease, transform 160ms ease;
+}
+
+.name-card input::placeholder {
+    color: rgba(255,255,255,0.35);
+    font-weight: 400;
+}
+
+.name-card input:focus {
+    box-shadow: var(--focus);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+
+.btn {
+    background: linear-gradient(180deg, #1fd6a8, #13b285);
+    color: #002217;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(3,35,28,0.35);
+    transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms;
+}
+
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(3,35,28,0.42);
+    }
+
+.hint {
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.45)
+}
+
+/* Bienvenida */
+.welcome-card {
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.03);
+    min-width: 240px;
+    text-align: center;
+}
+
+.welcome-text {
+    font-weight: 600;
+    color: var(--muted-white);
+    font-size: 1rem;
+}
+
+.visitor-name {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+    color: var(--accent);
+    font-weight: 700;
+    border: 1px solid rgba(31,214,168,0.09);
+}
+
+/* Sección principal tipo tarjeta */
+.main-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    padding: 26px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--glass-border);
+}
+
+/* Título centrado principal */
+.main-title {
+    text-align: center;
+    font-size: 1.45rem;
+    margin-bottom: 18px;
+    color: var(--muted-white);
+    letter-spacing: 0.6px;
+}
+
+/* Grid de información */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 16px;
+}
+
+.info-card {
+    background: var(--card-bg);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+
+    .info-card h3 {
+        font-size: 0.95rem;
+        color: var(--accent);
+        margin-bottom: 8px;
+    }
+
+    .info-card p {
+        color: var(--muted-white);
+        font-weight: 600;
+        font-size: 0.98rem;
+    }
+
+/* Footer */
+.page-footer {
+    text-align: center;
+    color: rgba(255,255,255,0.45);
+    font-size: 0.82rem;
+    padding-top: 6px;
+}
+
+/* Responsivo */
+@media (max-width:800px) {
+    .name-card {
+        width: 100%
+    }
+
+    .hero-card {
+        flex-direction: column;
+        align-items: stretch
+    }
+
+    .welcome-card {
+        width: 100%
+    }
+}
+
+
+/* Estilo para los bloques de código */
+.code-details {
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 16px;
+    margin: 16px auto;
+    width: 90%;
+    max-width: 900px;
+    color: var(--muted-white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+.code-summary {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1.1rem;
+    cursor: pointer;
+    outline: none;
+}
+
+/* Detalles / tarjetas de código: preparar posicionamiento para el boton copiar */
+.code-details {
+    position: relative;
+    padding: 1rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03); /* sutil sobre fondo oscuro */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    overflow: hidden;
+}
+
+/* Evitar que el summary quede debajo del boton */
+.code-details > .code-summary {
+    display: block;
+    padding-right: 140px; /* espacio para el boton en esquina */
+}
+
+/* Botón "Copiar código" posicionado en esquina */
+.copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: #2dd4bf; /* tono verde agua coherente */
+    color: #072b2a; /* texto oscuro solicitado para este boton */
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 6px 16px rgba(5, 56, 53, 0.12);
+    cursor: pointer;
+    transition: transform 120ms ease, filter 120ms ease;
+}
+
+/* Hover/Focus para copy */
+.copy-btn:hover,
+.copy-btn:focus {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+/* Ajustes responsivos para pantallas pequeñas */
+@media (max-width: 560px) {
+    .projects-header { flex-direction: column; align-items: flex-start; }
+    .code-details > .code-summary { padding-right: 100px; }
+    .copy-btn { top: 8px; right: 10px; padding: 5px 8px; font-size: 0.8rem; }
+}
+/* ---------- Fondo animado dinámico ---------- */
+@keyframes backgroundMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+body {
+    background: linear-gradient(135deg, #000000 0%, #001a2e 25%, #002d3d 55%, #023b2b 100%);
+    background-size: 220% 220%;
+    animation: backgroundMove 16s ease infinite;
+}
+
+/* ---------- Aparición de secciones ---------- */
+.page > * {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+    .page > *:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .page > *:nth-child(2) {
+        animation-delay: 0.25s;
+    }
+
+    .page > *:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+/* ---------- Brillo animado en los títulos ---------- */
+.logo, .main-title, .projects-title {
+    background: linear-gradient(90deg, #1fd6a8, #ffffff, #1fd6a8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientText 8s ease infinite;
+    background-size: 300%;
+}
+
+@keyframes gradientText {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* ---------- Tarjetas interactivas con movimiento ---------- */
+.info-card, .code-details, .hero-card, .main-card {
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+    .info-card:hover, .code-details:hover, .hero-card:hover, .main-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 40px rgba(31,214,168,0.25);
+    }
+
+/* ---------- Efecto resplandor al abrir los detalles ---------- */
+details[open] {
+    box-shadow: 0 0 20px rgba(31,214,168,0.12);
+    transition: box-shadow 0.4s ease;
+}
+
+/* ---------- Botón Agregar código animado ---------- */
+.add-code-btn {
+    display: block;
+    margin: 0 auto 18px;
+    background: linear-gradient(90deg, var(--teal), var(--teal-2));
+    border: none;
+    padding: 10px 18px;
+    color: var(--accent-dark);
+    font-weight: 700;
+    border-radius: 999px;
+    box-shadow: 0 10px 28px rgba(3,22,20,0.18);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+    .add-code-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 14px 36px rgba(3,22,20,0.25);
+        background: linear-gradient(90deg, var(--teal-2), var(--teal-dark));
+    }
+
+/* ---------- Animación de entrada para los códigos ---------- */
+.code-frame {
+    animation: fadeInUp 0.7s ease;
+    background: rgba(2, 10, 15, 0.85);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ---------- Pequeño brillo al pasar sobre los nombres de código ---------- */
+.file-name {
+    position: relative;
+}
+
+    .file-name::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 0%;
+        height: 2px;
+        background: var(--teal);
+        transition: width 0.4s ease;
+    }
+
+.code-summary:hover .file-name::after {
+    width: 100%;
+}
